@@ -5,11 +5,11 @@ all: isius
 
 .PHONY: isius
 
-isius: main.go
-	go build $(LDFLAGS) -o isius main.go
+isius: main.go check*.go
+	go build $(LDFLAGS) -o isius  check*.go main.go
 
-linux: main.go
-	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o isius main.go
+linux: main.go check*.go
+	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o isius  check*.go main.go
 
 check:
 	go test ./...
