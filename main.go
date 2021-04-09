@@ -18,7 +18,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jessevdk/go-flags"
 	"github.com/kazeburo/isius/accesslog"
-	ss "github.com/lestrrat/go-server-starter-listener"
+	"github.com/lestrrat-go/server-starter/listener"
 )
 
 const UNKNOWN = 3
@@ -176,15 +176,24 @@ func _main() int {
 		close(idleConnsClosed)
 	}()
 
-	l, err := ss.NewListener()
-	if l == nil || err != nil {
+	var l net.Listener
+	listens, err := listener.ListenAll()
+	if err != nil && err != listener.ErrNoListeningTarget {
+		log.Printf("Failed to initialize listener:%v", err)
+		return UNKNOWN
+	}
+
+	if len(listens) < 1 {
 		// Fallback if not running under Server::Starter
 		l, err = net.Listen("tcp", fmt.Sprintf("%s:%s", opts.Listen, opts.Port))
 		if err != nil {
 			log.Printf("Failed to listen to port %s:%s :%v", opts.Listen, opts.Port, err)
 			return CRITICAL
 		}
+	} else {
+		l = listens[0]
 	}
+
 	if err := server.Serve(l); err != http.ErrServerClosed {
 		log.Printf("Error in server.Serve: %v", err)
 		return CRITICAL
