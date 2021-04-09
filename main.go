@@ -472,9 +472,9 @@ func _main() int {
 	}
 
 	mount := opts.MountAPIOn
-	if mount != "" {
-		mount = "/" + mount
-	}
+	mount = strings.TrimPrefix(mount, "/")
+	mount = "/" + mount
+	mount = strings.TrimSuffix(mount, "/")
 
 	handleHTTPCheck := makeHTTPCheckHandler(opts.DefaultUserAgent)
 
