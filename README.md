@@ -28,9 +28,14 @@ Help Options:
 
 # APIs
 
-## X-Timeout
+## X-Timeout header
 
 `X-Timeout` is exist in request, isisu use it as timeout seconds to monitor.
+
+## {ip} parameter
+
+{ip} parameter can accept IPv4 Address, IPv6 Address and hostname string.
+When a hostname string given as {ip} parameter, isius resolve it as a IPv4 Address.
 
 ## Ping
 
