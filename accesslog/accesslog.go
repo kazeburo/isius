@@ -122,7 +122,8 @@ type Writer struct {
 // WrapWriter :
 func WrapWriter(w http.ResponseWriter) *Writer {
 	return &Writer{
-		w: w,
+		w:    w,
+		code: 200,
 	}
 }
 
