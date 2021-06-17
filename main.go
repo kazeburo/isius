@@ -42,7 +42,7 @@ type commandOpts struct {
 	Listen           string        `short:"l" long:"listen" default:"0.0.0.0" description:"address to bind"`
 	Port             string        `short:"p" long:"port" default:"3000" description:"Port number to bind"`
 	LogDir           string        `long:"access-log-dir" default:"" description:"directory to store logfiles"`
-	LogRotate        int64         `long:"access-log-rotate" default:"30" description:"Number of rotation before remove logs"`
+	LogRotate        uint          `long:"access-log-rotate" default:"30" description:"Number of rotation before remove logs"`
 	LogRotateTime    time.Duration `long:"access-log-rotate-time" default:"24h" description:"Interval time between file rotation"`
 	ReadTimeout      time.Duration `long:"read-timeout" default:"30s" description:"timeout of reading request"`
 	WriteTimeout     time.Duration `long:"write-timeout" default:"90s" description:"timeout of writing response"`
