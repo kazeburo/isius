@@ -19,7 +19,7 @@ type AccessLog struct {
 	logger *zap.Logger
 }
 
-func logWriter(logDir string, logRotate int64, logRotateTime time.Duration) (io.Writer, error) {
+func logWriter(logDir string, logRotate uint, logRotateTime time.Duration) (io.Writer, error) {
 	if logDir == "stdout" {
 		return os.Stdout, nil
 	} else if logDir == "" {
@@ -40,7 +40,8 @@ func logWriter(logDir string, logRotate int64, logRotateTime time.Duration) (io.
 	rl, err := rotatelogs.New(
 		logFile,
 		rotatelogs.WithLinkName(linkName),
-		rotatelogs.WithMaxAge(time.Duration(logRotate*int64(logRotateTime.Seconds()))),
+		rotatelogs.WithMaxAge(-1),
+		rotatelogs.WithRotationCount(logRotate),
 		rotatelogs.WithRotationTime(logRotateTime),
 	)
 	if err != nil {
@@ -50,7 +51,7 @@ func logWriter(logDir string, logRotate int64, logRotateTime time.Duration) (io.
 }
 
 // New :
-func New(logDir string, logRotate int64, logRotateTime time.Duration) (*AccessLog, error) {
+func New(logDir string, logRotate uint, logRotateTime time.Duration) (*AccessLog, error) {
 	w, err := logWriter(logDir, logRotate, logRotateTime)
 	if err != nil {
 		return nil, err
