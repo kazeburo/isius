@@ -106,7 +106,8 @@ func (al *AccessLog) WrapHandleFunc(h http.Handler) http.Handler {
 				zap.String("ua", r.UserAgent()),
 				zap.Float64("ptime", ptime.Seconds()),
 				zap.String("host", r.Host),
-				zap.String("xff", w.Header().Get("X-Forwarded-For")),
+				zap.String("xff", r.Header.Get("X-Forwarded-For")),
+				zap.Strings("errors", ww.GetErrors()),
 			)
 		}()
 		h.ServeHTTP(ww, r)
@@ -118,6 +119,7 @@ type Writer struct {
 	w    http.ResponseWriter
 	size int
 	code int
+	err  []string
 }
 
 // WrapWriter :
@@ -126,6 +128,18 @@ func WrapWriter(w http.ResponseWriter) *Writer {
 		w:    w,
 		code: 200,
 	}
+}
+
+func (w *Writer) SetErrors(s []string) {
+	w.err = s
+}
+
+func (w *Writer) GetErrors() []string {
+	if w.err != nil {
+		return w.err
+	}
+	var errs = []string{}
+	return errs
 }
 
 // Header :
