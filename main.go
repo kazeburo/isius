@@ -56,7 +56,7 @@ func round(f float64) int64 {
 }
 
 func parseIP(ip string) (*net.IPAddr, error) {
-	if strings.Index(ip, ":") != -1 {
+	if strings.Contains(ip, ":") {
 		return net.ResolveIPAddr("ip6", ip)
 	}
 	return net.ResolveIPAddr("ip4", ip)
@@ -66,6 +66,10 @@ func outJSON(w http.ResponseWriter, code int, msg string, errors ...error) {
 	error_strings := make([]string, 0)
 	for _, e := range errors {
 		error_strings = append(error_strings, e.Error())
+	}
+	if w2, ok := w.(*accesslog.Writer); ok && len(error_strings) > 0 {
+		w2.SetErrors(error_strings)
+		w = w2
 	}
 	json, err := json.Marshal(&res{
 		code,
@@ -81,12 +85,15 @@ func outJSON(w http.ResponseWriter, code int, msg string, errors ...error) {
 	}
 	w.Write(json)
 	w.Write([]byte("\n"))
-	return
 }
 
 func userErrorJSON(w http.ResponseWriter, e error) {
 	error_strings := make([]string, 0)
 	error_strings = append(error_strings, e.Error())
+	if w2, ok := w.(*accesslog.Writer); ok && len(error_strings) > 0 {
+		w2.SetErrors(error_strings)
+		w = w2
+	}
 	json, err := json.Marshal(&res{
 		UNKNOWN,
 		"bad request",
@@ -99,7 +106,6 @@ func userErrorJSON(w http.ResponseWriter, e error) {
 	w.WriteHeader(http.StatusBadRequest)
 	w.Write(json)
 	w.Write([]byte("\n"))
-	return
 }
 
 func handleHello(w http.ResponseWriter, r *http.Request) {
